@@ -5,6 +5,10 @@
 #pragma once
 
 #include "StepTimer.h"
+#include "SpriteBatch.h"
+#include "SimpleMath.h"
+#include <Keyboard.h>
+#include "GameTitle.h"
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -30,6 +34,14 @@ public:
 
     // Properties
     void GetDefaultSize( int& width, int& height ) const;
+
+
+	//////////////////////
+	//* グローバル関数 *//
+	//////////////////////
+
+	////* スプライトバッチ
+	//static std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 
 private:
 
@@ -62,4 +74,34 @@ private:
 
     // Rendering loop timer.
     DX::StepTimer                                   m_timer;
+
+
+
+
+	//* スプライトバッチ
+	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+
+	// キーボード
+	DirectX::Keyboard* m_keyboard;
+
+
+	//* タイトルテクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_title;
+	//* タイトルテクスチャの位置（ど真ん中）
+	DirectX::SimpleMath::Vector2 m_pos;
+	//* 多分、タイトルテクスチャのアンカーの座標
+	DirectX::SimpleMath::Vector2 m_titleOrigin;
+
+
+	//* パドルテクスチャ
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_paddleTexture;
+	//* パドル座標
+	DirectX::SimpleMath::Vector2 m_paddlePos;
+	//* パドル速度
+	DirectX::SimpleMath::Vector2 m_paddleSpd; 
+	//* アンカーの座標
+	DirectX::SimpleMath::Vector2 m_paddleOrigin;
+
+
+
 };
