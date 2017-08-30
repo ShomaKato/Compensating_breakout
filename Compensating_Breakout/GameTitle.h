@@ -4,7 +4,7 @@
 //*
 //*	@名前		GameTitle.h
 //*
-//* @役割		ゲームタイトルの処理クラス
+//* @役割		ゲームタイトルシーンの処理クラス
 //*
 //*	@著者		加藤 彰馬
 //*
@@ -16,38 +16,42 @@
 // ヘッダファイルのインクルード
 #include <d3d11_1.h>
 #include <SimpleMath.h>
-#include <Keyboard.h>
+#include "BaseScene.h"
 
 
-//////////////////////
-//* タイトルクラス *//
-//////////////////////
-class GameTitle
+
+class GameTitle : public  BaseScene
 {
 public:
 	GameTitle();
 	~GameTitle();
 
 	// 初期化関数
-	void Initialize();
+	//* NOTE:コムポインタはポインタ型として引数に使えるっぽい？
+	//void Initialize(Microsoft::WRL::ComPtr<ID3D11Device> device);
+	void Initialize(ID3D11Device* device);
 	// 更新関数
-	void Update();
+	void Update(DirectX::Keyboard* keyboard, DirectX::Keyboard::KeyboardStateTracker* keyboardTracker);
 	// 描画関数
-	void Render();
-	// 読み込み関数
-	void CreateDevice();
+	void Render(DirectX::SpriteBatch* spriteBatch);
+	// 消滅関数
+	void DestroyItself();
+
+	//* NOTE:テクスチャの読み込みはInitializeで行えることがわかったので↓関数は削除
+	// テクスチャ読み込み関数
+	//void CreateDevice();
 
 private:
-	// キーボード
-	DirectX::Keyboard* m_keyboard;
-
-	//* タイトルテクスチャ
+	// タイトルテクスチャ
+	//* NOTE:テクスチャはポインタ型でもユニークポインタ型でも、都合は悪くなさそう　統一してあればOKかも？
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_title;
-	//* タイトルテクスチャの位置（ど真ん中）
+	//ID3D11ShaderResourceView* m_title;
+
+	// タイトルテクスチャの座標
 	DirectX::SimpleMath::Vector2 m_pos;
-	//* 多分、タイトルテクスチャのアンカーの座標
-	DirectX::SimpleMath::Vector2 m_titleOrigin;
 
-
+	//* NOTE:別に左上にアンカーあっても良さそうなのでこれ↓は使わないことに
+	//// 多分、タイトルテクスチャのアンカーの座標
+	//DirectX::SimpleMath::Vector2 m_titleOrigin;
 };
 

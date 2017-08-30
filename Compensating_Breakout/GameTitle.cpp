@@ -4,7 +4,7 @@
 //*
 //*	@名前		GameTitle.cpp
 //*
-//* @役割		ゲームタイトルの処理クラス
+//* @役割		ゲームタイトルシーンの処理クラス
 //*
 //*	@著者		加藤 彰馬
 //*
@@ -12,12 +12,13 @@
 
 // ヘッダのインクルード
 #include "pch.h"
-#include "Game.h"
+#include "WICTextureLoader.h"
 #include "GameTitle.h"
 
 // 名前空間
 using namespace DirectX;
 using namespace DirectX::SimpleMath;
+using namespace Microsoft::WRL;
 
 
 
@@ -36,7 +37,6 @@ using namespace DirectX::SimpleMath;
 ////----------------------------------------------------------------------
 GameTitle::GameTitle()
 {
-	//Initialize();
 }
 
 ////----------------------------------------------------------------------
@@ -50,89 +50,85 @@ GameTitle::GameTitle()
 ////----------------------------------------------------------------------
 GameTitle::~GameTitle()
 {
-	//delete m_keyboard;
 }
 
 ////----------------------------------------------------------------------
 ////! @関数名：GameTitle
 ////!
-////! @役割：タイトルの初期化関数
+////! @役割：タイトルの初期化
 ////!
-////! @引数：なし(void)
+////! @引数：レンダリングおよびリソースの作成に使用されるデバイス (ID3D11Device*)
 ////!
 ////! @戻り値：なし(void)
 ////----------------------------------------------------------------------
-void GameTitle::Initialize()
+void GameTitle::Initialize(ID3D11Device* device)
+	//:m_pos.x(0.0f),m_pos.y(0.0f),m_title(nullptr)
 {
-	////* キーボードの初期化
-	//m_keyboard = new Keyboard;
+	// テクスチャを初期化する
+	//* NOTE:コムポインタは初期化もnullptr代入でOK？
+	m_title = nullptr;
 
-	////* タイトル画像の初期位置
-	//m_pos.x = 400.0f;
-	//m_pos.y = 300.0f;
+	// 絵をロードする
+	CreateWICTextureFromFile(device, L"Images\\title.png", nullptr, m_title.GetAddressOf());
+	
+	// タイトル画像の初期位置
+	m_pos.x = 0.0f;
+	m_pos.y = 0.0f;
 }
 
 ////----------------------------------------------------------------------
 ////! @関数名：Update
 ////!
-////! @役割：タイトルの更新関数
+////! @役割：タイトルの更新
 ////!
-////! @引数：なし(void)
+////! @引数：キーボード、キーボードの状態を見る何か
+////!		 (DirectX::Keyboard* DirectX::Keyboard::KeyboardStateTracker)
 ////!
 ////! @戻り値：なし(void)
 ////----------------------------------------------------------------------
-void GameTitle::Update()
+void GameTitle::Update(Keyboard* keyboard, Keyboard::KeyboardStateTracker* keyboardTracker)
 {
-	//// キーボードの状態取得
-	//auto kb = m_keyboard->GetState();
+	// キーボードの状態取得
+	auto kb = keyboard->GetState();
+	keyboardTracker->Update(kb);
 
-	//// ←キーで左へ
-	//if (kb.Space)
-	//{
-	//	this->~GameTitle();
-	//}
+
+	// スペースキーで消滅・プレイシーンへ
+	if (kb.Space)
+	{
+		this->DestroyItself();
+	}
 }
 
 ////----------------------------------------------------------------------
-////! @関数名：GameTitle
+////! @関数名：Render
 ////!
-////! @役割：タイトルの描画関数
+////! @役割：タイトルの描画
 ////!
-////! @引数：なし(void)
+////! @引数：スプライトバッチ (SpriteBatch*)
 ////!
 ////! @戻り値：なし(void)
 ////----------------------------------------------------------------------
-void GameTitle::Render()
+void GameTitle::Render(SpriteBatch* spriteBatch)
 {
-	////* タイトルの描画
-	//Game::m_spriteBatch->Draw(m_title.Get(), m_pos, nullptr, Colors::White,
+	//* NOTE:こちら↓の方が色々細かく設定できるっぽいが、最低限の描画で今は済ます
+	//* タイトルの描画
+	//spriteBatch->Draw(m_title.Get(), m_pos, nullptr, Colors::White,
 	//	0.f, m_titleOrigin);
+
+	spriteBatch->Draw(m_title.Get(), m_pos);
 }
 
 ////----------------------------------------------------------------------
-////! @関数名：GameTitle
+////! @関数名：DestroyItself
 ////!
-////! @役割：タイトルのデータ読み込み関数
+////! @役割：スペースキーが押されたらデストラクタを実行する
 ////!
 ////! @引数：なし(void)
 ////!
 ////! @戻り値：なし(void)
 ////----------------------------------------------------------------------
-void GameTitle::CreateDevice()
+void GameTitle::DestroyItself()
 {
-
-	////* タイトルのテクスチャ読み込み
-	//DX::ThrowIfFailed(
-	//	CreateWICTextureFromFile(m_d3dDevice.Get(), L"Images\\title.png",
-	//		resource.GetAddressOf(),
-	//		m_title.ReleaseAndGetAddressOf()));
-
-	//ComPtr<ID3D11Texture2D> title;
-	//DX::ThrowIfFailed(resource.As(&title));
-
-	//CD3D11_TEXTURE2D_DESC titleDesc;
-	//title->GetDesc(&titleDesc);
-
-	//m_titleOrigin.x = float(titleDesc.Width / 2);
-	//m_titleOrigin.y = float(titleDesc.Height / 2);
+	this->~GameTitle();
 }

@@ -4,11 +4,12 @@
 
 #pragma once
 
+#include <Keyboard.h>
 #include "StepTimer.h"
 #include "SpriteBatch.h"
 #include "SimpleMath.h"
-#include <Keyboard.h>
-#include "GameTitle.h"
+#include "BaseScene.h"
+#include "SceneManager.h"
 
 
 // A basic game implementation that creates a D3D11 device and
@@ -36,12 +37,18 @@ public:
     void GetDefaultSize( int& width, int& height ) const;
 
 
-	//////////////////////
-	//* グローバル関数 *//
-	//////////////////////
+	////////////////////////
+	////* グローバル変数 *//
+	////////////////////////
 
-	////* スプライトバッチ
+	//// スプライトバッチ
 	//static std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
+	//// デバイス
+	//static Microsoft::WRL::ComPtr<ID3D11Device> m_d3dDevice;
+	//// コンテキストデバイス
+	//static Microsoft::WRL::ComPtr<ID3D11DeviceContext> m_d3dContext;
+	//// リソースを指すコムポインタ（？）
+	//static Microsoft::WRL::ComPtr<ID3D11Resource> resource;
 
 private:
 
@@ -76,32 +83,14 @@ private:
     DX::StepTimer                                   m_timer;
 
 
+	BaseScene* m_scene;
 
 
-	//* スプライトバッチ
+	// スプライトバッチ
 	std::unique_ptr<DirectX::SpriteBatch> m_spriteBatch;
 
 	// キーボード
-	DirectX::Keyboard* m_keyboard;
-
-
-	//* タイトルテクスチャ
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_title;
-	//* タイトルテクスチャの位置（ど真ん中）
-	DirectX::SimpleMath::Vector2 m_pos;
-	//* 多分、タイトルテクスチャのアンカーの座標
-	DirectX::SimpleMath::Vector2 m_titleOrigin;
-
-
-	//* パドルテクスチャ
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_paddleTexture;
-	//* パドル座標
-	DirectX::SimpleMath::Vector2 m_paddlePos;
-	//* パドル速度
-	DirectX::SimpleMath::Vector2 m_paddleSpd; 
-	//* アンカーの座標
-	DirectX::SimpleMath::Vector2 m_paddleOrigin;
-
-
-
+	//* NOTE:キーボード入力にはこの二つが必須、らしい
+	std::unique_ptr<DirectX::Keyboard> m_keyboard;
+	std::unique_ptr<DirectX::Keyboard::KeyboardStateTracker> m_keyboardTracker;
 };

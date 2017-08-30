@@ -5,22 +5,49 @@
       <UniqueIdentifier>a056d365-2a07-42e0-a9dc-b59215face3b</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Classes">
+      <UniqueIdentifier>{eb155e3c-92f3-4cbc-be28-12c4e6ac7f06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Headers">
+      <UniqueIdentifier>{a9abffee-a582-4652-a6cc-33ef2f8e7b11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Classes\Sources">
+      <UniqueIdentifier>{73c3391c-cd0a-4ee4-8d29-ab3a67b7d5f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="StepTimer.h" />
-    <ClInclude Include="GameTitle.h" />
-    <ClInclude Include="GamePlay.h" />
-    <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="BaseScene.h">
+      <Filter>Classes\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GamePlay.h">
+      <Filter>Classes\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameTitle.h">
+      <Filter>Classes\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Classes\Headers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="GameTitle.cpp" />
-    <ClCompile Include="GamePlay.cpp" />
-    <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="BaseScene.cpp">
+      <Filter>Classes\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GamePlay.cpp">
+      <Filter>Classes\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTitle.cpp">
+      <Filter>Classes\Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Classes\Sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

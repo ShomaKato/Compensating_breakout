@@ -7,6 +7,9 @@
 #include "WICTextureLoader.h"
 #include "d3d11.h"
 #include "SimpleMath.h" 
+#include "GameTitle.h"
+#include "GamePlay.h"
+
 
 extern void ExitGame();
 
@@ -40,16 +43,16 @@ void Game::Initialize(HWND window, int width, int height)
     m_timer.SetTargetElapsedSeconds(1.0 / 60);
     */
 
-	//* キーボードの初期化
-	m_keyboard = new Keyboard;
+	//* NOTE:ただのポインタ型の定義はnew　ユニークポインタならメイクユニーク
+	//*	NOTE:キーボード、マウスなどの外部接続はユニークポインタの方がいい、らしい
 
-	//* タイトル画像の初期位置
-	m_pos.x = 400.0f;
-	m_pos.y = 300.0f;
+	// キーボードの定義
+	m_keyboard = std::make_unique<Keyboard>();
+	m_keyboardTracker = std::make_unique<Keyboard::KeyboardStateTracker>();
 
-	//* パドルの初期位置
-	m_paddlePos.x = 400.0f;
-	m_paddlePos.y = 300.0f;
+	//m_scene = new GameTitle;
+	m_scene = new GamePlay;
+	m_scene->Initialize(m_d3dDevice.Get());
 }
 
 // Executes the basic game loop.
@@ -72,21 +75,7 @@ void Game::Update(DX::StepTimer const& timer)
     elapsedTime;
 
 
-	//* キーボードの状態取得
-	auto kb = m_keyboard->GetState();
-	if (kb.Escape)
-		PostQuitMessage(0);
-
-	//* ←キーで左へ
-	if (kb.Left)
-	{
-		m_paddlePos.x = m_paddlePos.x - 3.5f;
-	}
-	//* →キーで右へ
-	if (kb.Right)
-	{
-		m_paddlePos.x = m_paddlePos.x + 3.5f;
-	}
+	m_scene->Update(m_keyboard.get(), m_keyboardTracker.get());
 }
 
 // Draws the scene.
@@ -104,12 +93,15 @@ void Game::Render()
 
 	//* スプライトバッチの描画
 	m_spriteBatch->Begin();
-	////* タイトルの描画
-	m_spriteBatch->Draw(m_title.Get(), m_pos, nullptr, Colors::White,
-		0.f, m_titleOrigin);
-	//* パドルの描画
-	m_spriteBatch->Draw(m_paddleTexture.Get(), m_paddlePos, nullptr, Colors::White,
-		0.f, m_paddleOrigin);
+	//////* タイトルの描画
+	//m_spriteBatch->Draw(m_title.Get(), m_pos, nullptr, Colors::White,
+	//	0.f, m_titleOrigin);
+	////* パドルの描画
+	//m_spriteBatch->Draw(m_paddleTexture.Get(), m_paddlePos, nullptr, Colors::White,
+	//	0.f, m_paddleOrigin);
+
+	m_scene->Render(m_spriteBatch.get());
+
 	m_spriteBatch->End();
 
     Present();
@@ -273,41 +265,24 @@ void Game::CreateDevice()
     // TODO: Initialize device dependent objects here (independent of window size).
 
 
-	//* スプライトバッチの何か
+	//* スプライトバッチの定義
 	m_spriteBatch = std::make_unique<SpriteBatch>(m_d3dContext.Get());
 	ComPtr<ID3D11Resource> resource;
 
-	//* タイトルのテクスチャ読み込み
-	DX::ThrowIfFailed(
-		CreateWICTextureFromFile(m_d3dDevice.Get(), L"Images\\title.png",
-			resource.GetAddressOf(),
-			m_title.ReleaseAndGetAddressOf()));
+	////* パドルのテクスチャ読み込み
+	//DX::ThrowIfFailed(
+	//	CreateWICTextureFromFile(m_d3dDevice.Get(), L"Images\\paddle.png",
+	//		resource.GetAddressOf(),
+	//		m_paddleTexture.ReleaseAndGetAddressOf()));
 
-	ComPtr<ID3D11Texture2D> title;
-	DX::ThrowIfFailed(resource.As(&title));
+	//ComPtr<ID3D11Texture2D> paddle;
+	//DX::ThrowIfFailed(resource.As(&paddle));
 
-	CD3D11_TEXTURE2D_DESC titleDesc;
-	title->GetDesc(&titleDesc);
+	//CD3D11_TEXTURE2D_DESC paddleDesc;
+	//paddle->GetDesc(&paddleDesc);
 
-	m_titleOrigin.x = float(titleDesc.Width / 2);
-	m_titleOrigin.y = float(titleDesc.Height / 2);
-
-
-	//* パドルのテクスチャ読み込み
-	DX::ThrowIfFailed(
-		CreateWICTextureFromFile(m_d3dDevice.Get(), L"Images\\paddle.png",
-			resource.GetAddressOf(),
-			m_paddleTexture.ReleaseAndGetAddressOf()));
-
-	ComPtr<ID3D11Texture2D> paddle;
-	DX::ThrowIfFailed(resource.As(&paddle));
-
-	CD3D11_TEXTURE2D_DESC paddleDesc;
-	paddle->GetDesc(&paddleDesc);
-
-	m_paddleOrigin.x = float(paddleDesc.Width / 2);
-	m_paddleOrigin.y = float(paddleDesc.Height / 2);
-
+	//m_paddleOrigin.x = float(paddleDesc.Width / 2);
+	//m_paddleOrigin.y = float(paddleDesc.Height / 2);
 
 }
 
@@ -433,9 +408,10 @@ void Game::CreateResources()
 void Game::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here.
-	//* スプライトバッチの終了か何か
+
+	//* スプライトバッチの初期化
 	m_spriteBatch.reset();
-	//*
+	
     m_depthStencilView.Reset();
     m_renderTargetView.Reset();
     m_swapChain1.Reset();
